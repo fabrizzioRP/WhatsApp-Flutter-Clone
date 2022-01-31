@@ -1,5 +1,11 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:whatsapp_flu/services/usuarios_services.dart';
+import 'package:whatsapp_flu/widgets/show_history.dart';
 
 const String image =
     'https://imageio.forbes.com/specials-images/imageserve/5f47d4de7637290765bce495/0x0.jpg';
@@ -23,13 +29,6 @@ class StatusUser extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: 'contactos',
-      //   backgroundColor: Colors.green,
-      //   child: const Icon(Icons.message_rounded),
-      //   elevation: 0,
-      //   onPressed: () {},
-      // ),
     );
   }
 
@@ -49,13 +48,32 @@ class StatusUser extends StatelessWidget {
 }
 
 class _MyStatus extends StatelessWidget {
+  int previousValue = 0;
   @override
   Widget build(BuildContext context) {
+    final userImage = Provider.of<User>(context);
     return ListTile(
-      leading: const CircleAvatar(
-        radius: 25.0,
-        backgroundColor: Colors.green,
-        child: Icon(Icons.add_box_outlined, color: Colors.white),
+      leading: CircleAvatar(
+        backgroundColor: userImage.isViewedHistory ? Colors.grey : Colors.green,
+        maxRadius: 28.0,
+        child: userImage.image.isNotEmpty
+            ? Container(
+                margin: const EdgeInsets.all(3.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  image: DecorationImage(
+                    image:
+                        FileImage(userImage.image[userImage.image.length - 1]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+            : const CircleAvatar(
+                radius: 28.0,
+                backgroundColor: Colors.green,
+                child: Icon(Icons.add_box_outlined, color: Colors.white),
+              ),
       ),
       title: const Text('My Status',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
@@ -64,7 +82,14 @@ class _MyStatus extends StatelessWidget {
         icon: const Icon(Icons.more_horiz_outlined),
         onPressed: () {},
       ),
-      onTap: () {},
+      onTap: () {
+        previousValue = userImage.image.length;
+        showDialog(
+          context: context,
+          builder: (context) => ShowHistoryScreen(userImage: userImage.image),
+        );
+        userImage.isViewedHistory = true;
+      },
     );
   }
 }
@@ -79,7 +104,6 @@ class _RecentUpdatesStatus extends StatelessWidget {
       separatorBuilder: (_, i) {
         return ListTile(
           leading: CircleAvatar(
-            // cambiar a gris cuando lo vio.
             backgroundColor: Colors.green,
             maxRadius: 28.0,
             child: Container(

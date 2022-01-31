@@ -11,9 +11,10 @@ class ListChatUser extends StatelessWidget {
         itemCount: 10,
         separatorBuilder: (_, i) {
           return ListTile(
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               maxRadius: 28.0,
-              backgroundImage: NetworkImage(
+              backgroundImage: const NetworkImage(
                   'https://imageio.forbes.com/specials-images/imageserve/5f47d4de7637290765bce495/0x0.jpg'),
             ),
             title: const Text('Elonk Musk',
@@ -43,13 +44,6 @@ class ListChatUser extends StatelessWidget {
           thickness: 0.5,
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: 'contactos',
-      //   backgroundColor: Colors.green,
-      //   child: const Icon(Icons.message_rounded),
-      //   elevation: 0,
-      //   onPressed: () {},
-      // ),
     );
   }
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:whatsapp_flu/services/usuarios_services.dart';
+import 'package:whatsapp_flu/utils/init_camera.dart';
 import 'package:whatsapp_flu/widgets/calls_user.dart';
+import 'package:whatsapp_flu/widgets/camera_user.dart';
 import 'package:whatsapp_flu/widgets/chat_user.dart';
 import 'package:whatsapp_flu/widgets/status_user.dart';
 
@@ -49,14 +53,19 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final consumeTheme = Provider.of<User>(context);
     return DefaultTabController(
       initialIndex: 1,
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.teal.shade800,
           title: const Text('WhatsApp', style: TextStyle(fontSize: 22)),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.dark_mode),
+              onPressed: () => consumeTheme.isModeDark =
+                  consumeTheme.isModeDark ? false : true,
+            ),
             IconButton(
               icon: const Icon(Icons.search),
               onPressed: () {},
@@ -68,11 +77,18 @@ class _HomeScreenState extends State<HomeScreen>
           ],
           bottom: TabBar(
             controller: _tabController,
-            indicatorColor: Colors.white,
+            indicatorColor:
+                consumeTheme.isModeDark ? Colors.green.shade700 : Colors.white,
+            indicatorWeight: 3.0,
             labelStyle: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
+            labelColor:
+                consumeTheme.isModeDark ? Colors.green.shade700 : Colors.white,
+            unselectedLabelColor: consumeTheme.isModeDark
+                ? Colors.grey.shade500
+                : Colors.grey.shade300,
             tabs: tabBarList,
           ),
         ),
@@ -80,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen>
           controller: _tabController,
           physics: const BouncingScrollPhysics(),
           children: const [
-            Icon(Icons.camera_alt_sharp),
+            CameraUserScreen(),
             ListChatUser(),
             StatusUser(),
             CallUserHistory(),
@@ -95,25 +111,32 @@ class _HomeScreenState extends State<HomeScreen>
                 mini: true,
                 elevation: 0,
                 backgroundColor: Colors.grey,
-                child: const Icon(Icons.edit, size: 20),
+                child: const Icon(Icons.edit, size: 20, color: Colors.white),
                 onPressed: () {},
               ),
             const SizedBox(height: 5),
             if (_currentIndex > 0)
               FloatingActionButton(
-                backgroundColor: Colors.green,
-                child: (_currentIndex == 1)
-                    ? const Icon(Icons.message_rounded)
-                    : (_currentIndex == 2)
-                        ? const Icon(Icons.camera_alt)
-                        : const Icon(Icons.add_call),
+                child: changeIconFloatingBtn(_currentIndex),
                 elevation: 0,
-                onPressed: () {},
+                onPressed: () => onPressedFloatingBtn(context, _currentIndex),
               ),
           ],
         ),
       ),
     );
+  }
+
+  Widget changeIconFloatingBtn(int currentIndex) => (_currentIndex == 1)
+      ? const Icon(Icons.message_rounded, color: Colors.white)
+      : (_currentIndex == 2)
+          ? const Icon(Icons.camera_alt, color: Colors.white)
+          : const Icon(Icons.add_call, color: Colors.white);
+
+  void onPressedFloatingBtn(BuildContext context, int currentIndex) async {
+    if (currentIndex == 2) {
+      functionCamera(context);
+    }
   }
 
   @override
